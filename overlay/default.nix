@@ -46,6 +46,15 @@ in
       aarch64-multiplatform-musl =
         (super.pkgsCross.aarch64-multiplatform-musl.appendOverlays
           [ cross-overlay static-overlay ]);
+
+      armv7l-hf-multiplatform =
+        (super.pkgsCross.armv7l-hf-multiplatform.appendOverlays
+          [ cross-overlay ]);
+
+      # this attempt does not work
+      #armv7l-hf-multiplatform-static =
+      #  (super.pkgsCross.armv7l-hf-multiplatform.pkgsStatic.appendOverlays
+      #    [ cross-overlay static-overlay ]);
     };
 
 

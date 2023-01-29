@@ -124,6 +124,7 @@ in
             installPhase = ''
               mkdir -p $out/findlib.conf.d
               ln -sf ${native_findlib_conf} $out/findlib.conf
+              #ln -sf ${native_findlib_conf} $out/findlib.conf.d/findlib.conf
               ln -sf ${aarch64_findlib_conf} $out/findlib.conf.d/${crossName}.conf
             '';
           };
@@ -160,7 +161,7 @@ in
       ocamlbuild = natocamlPackages.ocamlbuild;
       opaline = natocamlPackages.opaline;
 
-      buildDunePackage = args: (osuper.buildDunePackage ({
+      buildDunePackage = args: (fixOCamlPackage (osuper.buildDunePackage ({
         buildPhase = ''
           runHook preBuild
           dune build -p ${args.pname} ''${enableParallelBuilding:+-j $NIX_BUILD_CORES} -x ${crossName}
@@ -184,12 +185,13 @@ in
             runHook postInstall
           '';
       } // args
-      )).overrideAttrs (o: {
-        nativeBuildInputs =
-          [ natocaml natdune natfindlib buildPackages.stdenv.cc ] ++
-          # XXX(anmonteiro): apparently important that this comes after
-          (o.nativeBuildInputs or [ ]);
-      });
+      ))).overrideAttrs
+        (o: {
+          nativeBuildInputs =
+            [ natocaml natdune natfindlib buildPackages.stdenv.cc ] ++
+            # XXX(anmonteiro): apparently important that this comes after
+            (o.nativeBuildInputs or [ ]);
+        });
 
       topkg = natocamlPackages.topkg.overrideAttrs (o:
         let
