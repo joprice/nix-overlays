@@ -62,4 +62,7 @@ buildDunePackage {
 
   doCheck = true;
   checkInputs = [ alcotest rosetta ];
+  postPatch = ''
+    substituteInPlace test/dune --replace "rresult result" "rresult"
+  '';
 }
