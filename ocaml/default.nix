@@ -1588,7 +1588,7 @@ with oself;
   reason-harfbuzz = callPackage ./revery/reason-harfbuzz.nix { };
   reason-sdl2 = callPackage ./revery/reason-sdl2.nix { };
   reason-skia = callPackage ./revery/reason-skia.nix {
-    inherit libfontconfig;
+    #inherit libfontconfig;
   };
   revery = callPackage ./revery { };
 
