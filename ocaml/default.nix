@@ -30,6 +30,7 @@
 , openssl-oc
 , pam
 , pkg-config
+, protobuf
 , python3
 , python3Packages
 , lmdb
