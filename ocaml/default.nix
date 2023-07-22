@@ -178,7 +178,7 @@ with oself;
 
   aws = buildDunePackage {
     pname = "aws";
-    version = "0.0.0";
+    version = "n/a";
     src = fetchFromGitHub {
       owner = "joprice";
       repo = "ocaml-aws";
@@ -196,7 +196,7 @@ with oself;
 
   aws-sts = buildDunePackage {
     pname = "aws-sts";
-    version = "0.0.0";
+    version = "n/a";
     inherit (aws) src;
     propagatedBuildInputs = [
       aws
@@ -206,7 +206,7 @@ with oself;
 
   aws-lwt = buildDunePackage {
     pname = "aws-lwt";
-    version = "0.0.0";
+    version = "n/a";
     inherit (aws) src;
     propagatedBuildInputs = [
       aws
@@ -218,7 +218,7 @@ with oself;
   # unhandled response types. try to move to newly published aws client
   aws-s3 = buildDunePackage {
     pname = "aws-s3";
-    version = "0.0.0";
+    version = "n/a";
     inherit (aws) src;
     propagatedBuildInputs = [
       aws
@@ -228,7 +228,7 @@ with oself;
 
   multibase = buildDunePackage {
     pname = "multibase";
-    version = "0.0.0";
+    version = "n/a";
     src = fetchFromGitHub {
       owner = "patricoferris";
       repo = "ocaml-multibase";
@@ -410,7 +410,7 @@ with oself;
 
   capnp-ocaml = buildDunePackage {
     pname = "capnp";
-    version = "0.0.0";
+    version = "n/a";
     buildInputs = [
     ];
     propagatedBuildInputs = [
@@ -429,7 +429,7 @@ with oself;
   };
   capnp-rpc = buildDunePackage {
     pname = "capnp-rpc";
-    version = "0.0.0";
+    version = "n/a";
     propagatedBuildInputs = [
       astring
       fmt
@@ -446,7 +446,7 @@ with oself;
   };
   capnp-rpc-lwt = buildDunePackage {
     pname = "capnp-rpc-lwt";
-    version = "0.0.0";
+    version = "n/a";
     nativeBuildInputs = [
       capnp-ocaml
       capnproto
@@ -467,7 +467,7 @@ with oself;
   };
   capnp-rpc-net = buildDunePackage {
     pname = "capnp-rpc-net";
-    version = "0.0.0";
+    version = "n/a";
     propagatedBuildInputs = [
       prometheus
       ptime
@@ -480,7 +480,7 @@ with oself;
   };
   capnp-rpc-unix = buildDunePackage {
     pname = "capnp-rpc-unix";
-    version = "0.0.0";
+    version = "n/a";
     propagatedBuildInputs = [
       capnp-rpc
       cmdliner
@@ -788,6 +788,23 @@ with oself;
     };
   };
 
+  domain-local-timeout = buildDunePackage
+    {
+      pname = "domain-local-timeout";
+      version = "n/a";
+      src = fetchFromGitHub {
+        owner = "ocaml-multicore";
+        repo = "domain-local-timeout";
+        rev = "66be5948b6ddf73459b9becd413eea7339960ae6";
+        sha256 = "sha256-OIEhjiDKmBL+k7vYHTZBpHwuYUdjecCz1tQ3beATy44=";
+      };
+      propagatedBuildInputs = [
+        mtime
+        psq
+        thread-table
+      ];
+    };
+
   domain-shims = buildDunePackage {
     pname = "domain_shims";
     version = "0.1.0";
@@ -900,7 +917,7 @@ with oself;
       substituteInPlace src/dune --replace "bytes" ""
     '';
     pname = "extunix";
-    version = "0.0.0";
+    version = "n/a";
     buildInputs = [ dune-configurator ];
     propagatedBuildInputs = [
       ppxlib
@@ -1802,7 +1819,7 @@ with oself;
 
   rench = buildDunePackage {
     pname = "Rench";
-    version = "0.0.0";
+    version = "n/a";
     src = fetchFromGitHub {
       owner = "revery-ui";
       repo = "rench";
@@ -1815,7 +1832,7 @@ with oself;
 
   timber = buildDunePackage {
     pname = "timber";
-    version = "0.0.0";
+    version = "n/a";
     src = fetchFromGitHub {
       owner = "revery-ui";
       repo = "timber";
@@ -1964,7 +1981,7 @@ with oself;
 
   ocaml-protoc-plugin = buildDunePackage {
     pname = "ocaml-protoc-plugin";
-    version = "0.0.0";
+    version = "n/a";
     src = fetchFromGitHub {
       owner = "issuu";
       repo = "ocaml-protoc-plugin";
