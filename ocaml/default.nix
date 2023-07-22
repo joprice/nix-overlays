@@ -5,6 +5,7 @@
 , automake
 , bash
 , buildPackages
+, capnproto
 , cmake
 , fetchpatch
 , fetchFromGitHub
