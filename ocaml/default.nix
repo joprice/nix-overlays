@@ -862,6 +862,45 @@ with oself;
     nativeBuildInputs = [ ocaml dune findlib crunch ];
   });
 
+  grpc = buildDunePackage {
+    pname = "grpc";
+    version = "n/a";
+    src = fetchFromGitHub {
+      owner = "dialohq";
+      repo = "ocaml-grpc";
+      rev = "4fa8b5396442d264f61c36e08e42c589c8f7d16f";
+      sha256 = "sha256-AWHfZaOlWCgKhx0w6qN7F8dZ0RlJ/3fuwp8ZhM7cUh8=";
+    };
+    propagatedBuildInputs = [
+      ppx_deriving
+      uri
+      bigstringaf
+      h2
+    ];
+  };
+  grpc-lwt = buildDunePackage {
+    pname = "grpc-lwt";
+    version = "n/a";
+    inherit (grpc) src;
+    propagatedBuildInputs = [
+      ppx_deriving
+      uri
+      bigstringaf
+      h2
+      lwt
+      grpc
+    ];
+  };
+  grpc-eio = buildDunePackage {
+    pname = "grpc-eio";
+    version = "n/a";
+    inherit (grpc) src;
+    propagatedBuildInputs = [
+      h2-eio
+      grpc
+    ];
+  };
+
   gsl = buildDunePackage {
     pname = "gsl";
     version = "1.24.3";
