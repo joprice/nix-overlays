@@ -2104,7 +2104,7 @@ with oself;
     };
     postPatch = ''
       substituteInPlace "src/api/dune" --replace "result" ""
-      substituteInPlace src/runtime/dune "(libraries result))" ""
+      substituteInPlace src/runtime/dune --replace "(libraries result))" ")"
     '';
 
     buildInputs = [ ];
