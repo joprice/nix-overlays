@@ -174,6 +174,69 @@ with oself;
   archi-lwt = callPackage ./archi/lwt.nix { };
   archi-async = callPackage ./archi/async.nix { };
 
+  aws = buildDunePackage {
+    pname = "aws";
+    version = "0.0.0";
+    src = fetchFromGitHub {
+      owner = "joprice";
+      repo = "ocaml-aws";
+      rev = "a0113eb6bb9b3e97880f1f6a284e1ae1726e54bf";
+      sha256 = "sha256-dfqzshSkHSOiAAqdejnNuR5o4sfk+s9j2VwKjfWsYeA=";
+    };
+    propagatedBuildInputs = [
+      calendar
+      ezxmlm
+      digestif
+      base64
+      uri
+    ];
+  };
+
+  aws-sts = buildDunePackage {
+    pname = "aws-sts";
+    version = "0.0.0";
+    inherit (aws) src;
+    propagatedBuildInputs = [
+      aws
+      cohttp-lwt-unix
+    ];
+  };
+
+  aws-lwt = buildDunePackage {
+    pname = "aws-lwt";
+    version = "0.0.0";
+    inherit (aws) src;
+    propagatedBuildInputs = [
+      aws
+      cohttp-lwt-unix
+    ];
+  };
+
+  aws-s3 = buildDunePackage {
+    pname = "aws-s3";
+    version = "0.0.0";
+    inherit (aws) src;
+    propagatedBuildInputs = [
+      aws
+      cohttp-lwt-unix
+    ];
+  };
+
+  multibase = buildDunePackage {
+    pname = "multibase";
+    version = "0.0.0";
+    src = fetchFromGitHub {
+      owner = "patricoferris";
+      repo = "ocaml-multibase";
+      rev = "f235f74109b007609a599f1ce877c267c9f695d5";
+      sha256 = "sha256-aVzlR2Er2gx41F3XuwbbJZzcEkeKiWvn0c7dLywekNU=";
+    };
+    propagatedBuildInputs = [
+      base64
+      optint
+    ];
+  };
+
   multiformats = buildDunePackage {
     pname = "multiformats";
     version = "dev";
