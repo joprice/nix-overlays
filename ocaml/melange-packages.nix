@@ -16,6 +16,20 @@ with oself;
     propagatedBuildInputs = [ melange ];
   };
 
+  melange-json = buildDunePackage
+    {
+      pname = "melange-json";
+      version = "n/a";
+      src = fetchFromGitHub {
+        owner = "melange-community";
+        repo = "melange-json";
+        rev = "bfeb902da1f0b1d2793277c84777c4bf4c094af8";
+        sha256 = "sha256-hN/5fKQ6Y/96Hpin/FKmdtqM3jfXP7UL/wSFfl/86SA=";
+      };
+      nativeBuildInputs = [ melange ];
+      buildInputs = [ melange ];
+    };
+
   melange-relay = buildDunePackage {
     pname = "melange-relay";
     version = "n/a";
