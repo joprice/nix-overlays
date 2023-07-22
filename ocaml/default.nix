@@ -212,6 +212,8 @@ with oself;
     ];
   };
 
+  # TODO: Remove if unused. s3 client generated code didn't work as expected due to 
+  # unhandled response types. try to move to newly published aws client
   aws-s3 = buildDunePackage {
     pname = "aws-s3";
     version = "0.0.0";
@@ -403,6 +405,91 @@ with oself;
     propagatedBuildInputs = [ camlp-streams ];
     postInstall = null;
   });
+
+  capnp-ocaml = buildDunePackage {
+    pname = "capnp";
+    version = "0.0.0";
+    buildInputs = [
+    ];
+    propagatedBuildInputs = [
+      stdio
+      res
+      ocplib-endian
+      stdint
+      result
+    ];
+    src = fetchFromGitHub {
+      owner = "capnproto";
+      repo = "capnp-ocaml";
+      rev = "cc461758431a77e6c7854f8e1875c2f91dca8ef2";
+      sha256 = "sha256-G4B1llsHnGcuGIarDB248QMaRBvS47IEQB5B93wY7nA=";
+    };
+  };
+  capnp-rpc = buildDunePackage {
+    pname = "capnp-rpc";
+    version = "0.0.0";
+    propagatedBuildInputs = [
+      astring
+      fmt
+      logs
+      asetmap
+      stdint
+    ];
+    src = fetchFromGitHub {
+      owner = "mirage";
+      repo = "capnp-rpc";
+      rev = "a21ddc6fca2ae8e6c5f59a66f7308284af3eecfb";
+      sha256 = "sha256-mx3I5TQtxuaQ0d5d2JO0vF4D5l3Kx8nkxZKXukBYX44=";
+    };
+  };
+  capnp-rpc-lwt = buildDunePackage {
+    pname = "capnp-rpc-lwt";
+    version = "0.0.0";
+    nativeBuildInputs = [
+      capnp-ocaml
+      capnproto
+    ];
+    buildInputs = [
+    ];
+    propagatedBuildInputs = [
+      uri
+      astring
+      capnp-ocaml
+      capnp-rpc
+      fmt
+      logs
+      lwt
+      uri
+    ];
+    inherit (capnp-rpc) src;
+  };
+  capnp-rpc-net = buildDunePackage {
+    pname = "capnp-rpc-net";
+    version = "0.0.0";
+    propagatedBuildInputs = [
+      prometheus
+      ptime
+      uri
+      base64
+      tls-mirage
+      capnp-rpc-lwt
+    ];
+    inherit (capnp-rpc) src;
+  };
+  capnp-rpc-unix = buildDunePackage {
+    pname = "capnp-rpc-unix";
+    version = "0.0.0";
+    propagatedBuildInputs = [
+      capnp-rpc
+      cmdliner
+      cstruct-lwt
+      extunix
+      fmt
+      mirage-crypto-rng-lwt
+      capnp-rpc-net
+    ];
+    inherit (capnp-rpc) src;
+  };
 
   checkseum = osuper.checkseum.overrideAttrs (o: {
     src = builtins.fetchurl {
@@ -1856,6 +1943,24 @@ with oself;
     '';
   });
 
+  ocaml-protoc-plugin = buildDunePackage {
+    pname = "ocaml-protoc-plugin";
+    version = "0.0.0";
+    src = fetchFromGitHub {
+      owner = "issuu";
+      repo = "ocaml-protoc-plugin";
+      rev = "eb1c431aa23364e09be294dec6a4e5ed0c7b4413";
+      sha256 = "sha256-ZHeOi3y2X11MmkRuthmYFSjPLoGlGTO1pnRfk/XmgPU=";
+    };
+    nativeBuildInputs = [
+      pkg-config
+      # This needs to be in both native and regular buildInputs in order to allow linking
+      # to libprotobuf and use of the protoc tool by dune targets
+      protobuf
+    ];
+    buildInputs = [ protobuf ];
+  };
+
   ocaml_pcre = osuper.ocaml_pcre.override { pcre = pcre-oc; };
 
   # These require crowbar which is still not compatible with newer cmdliner.
@@ -2065,6 +2170,17 @@ with oself;
   redis-sync = callPackage ./redis/sync.nix { };
 
   reenv = callPackage ./reenv { };
+
+  res = buildDunePackage {
+    pname = "res";
+    version = "n/a";
+    src = fetchFromGitHub {
+      owner = "mmottl";
+      repo = "res";
+      rev = "d3e3e391e67407c427e148c6cac4bdc78cccbeeb";
+      sha256 = "sha256-/nIHS6Hd0hxqS02fPxviGHmSc2w1oIGmfkiCBTC4c3k=";
+    };
+  };
 
   rfc7748 = osuper.rfc7748.overrideAttrs (_: {
     postPatch = ''
