@@ -524,8 +524,8 @@ with oself;
   cairo2-pango = buildDunePackage {
     pname = "cairo2-pango";
     inherit (cairo2) version src;
-    buildInputs = [ pkgs.cairo dune-configurator pkgs.gtk2 ];
-    nativeBuildInputs = [ pkgs.pkg-config ];
+    nativeBuildInputs = [ nativeCairo pkg-config ];
+    buildInputs = [ dune-configurator gtk2.dev ];
     propagatedBuildInputs = [ cairo2 lablgtk ];
   };
 
