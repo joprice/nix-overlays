@@ -895,6 +895,23 @@ with oself;
     propagatedBuildInputs = o.propagatedBuildInputs ++ [ pp ];
     inherit (dyn) preBuild;
   });
+  extunix = buildDunePackage {
+    preBuild = ''
+      substituteInPlace src/dune --replace "bytes" ""
+    '';
+    pname = "extunix";
+    version = "0.0.0";
+    buildInputs = [ dune-configurator ];
+    propagatedBuildInputs = [
+      ppxlib
+    ];
+    src = fetchFromGitHub {
+      owner = "ygrek";
+      repo = "extunix";
+      rev = "9b84a56702d7b7ebc6ca70fecae62d581c242645";
+      sha256 = "sha256-XPy6jH6u3FectTgOKP9cniM5AcSzqg5mnJ8kB3JJaps=";
+    };
+  };
   fiber = osuper.fiber.overrideAttrs (o: {
     src = builtins.fetchurl {
       url = https://github.com/ocaml-dune/fiber/releases/download/3.7.0/fiber-lwt-3.7.0.tbz;
