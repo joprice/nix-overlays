@@ -521,6 +521,14 @@ with oself;
     propagatedBuildInputs = [ cairo2 lablgtk ];
   };
 
+  cairo2-pango = buildDunePackage {
+    pname = "cairo2-pango";
+    inherit (cairo2) version src;
+    buildInputs = [ pkgs.cairo dune-configurator pkgs.gtk2 ];
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    propagatedBuildInputs = [ cairo2 lablgtk ];
+  };
+
   cmarkit = osuper.cmarkit.overrideAttrs (_: {
     buildPhase = "${topkg.buildPhase} --with-cmdliner true";
   });
@@ -2094,13 +2102,16 @@ with oself;
       rev = "b4896214b0";
       sha256 = "sha256-+HEpLltTLerHvZftOunRQgXkstUKNgJB2nKDBgD7hr8=";
     };
+    postPatch = ''
+      substituteInPlace "src/api/dune" --replace "result" ""
+      substituteInPlace src/runtime/dune: "(libraries result))" ""
+    '';
 
     buildInputs = [ ];
     propagatedBuildInputs = [
       findlib
       ppxlib
       ppx_derivers
-      result
     ];
   });
 
