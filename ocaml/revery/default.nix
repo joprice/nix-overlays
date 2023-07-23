@@ -20,6 +20,13 @@
 , reason-harfbuzz
 , rench
 , timber
+, reason-native
+, stdenv
+, libcxx
+, SDL2
+, harfbuzz
+, libpng
+, expat
 }:
 
 let
@@ -66,6 +73,7 @@ buildDunePackage {
     pkg-config
   ];
   propagatedBuildInputs = [
+    reason-native.rely
     ppx_deriving
     brisk-reconciler
     lwt_ppx
@@ -81,5 +89,11 @@ buildDunePackage {
     lruOverride
     rench
     timber
+    SDL2.dev
+    libpng
+    expat
   ];
+  env.NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
+  HARFBUZZ_INCLUDE_PATH = "${harfbuzz.dev}/include/harfbuzz";
+  HARFBUZZ_LIB_PATH = ''${harfbuzz}/lib'';
 }

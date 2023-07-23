@@ -176,14 +176,15 @@ with oself;
   archi-lwt = callPackage ./archi/lwt.nix { };
   archi-async = callPackage ./archi/async.nix { };
 
+  # TODO: try https://github.com/anmonteiro/ocaml-aws.git
   aws = buildDunePackage {
     pname = "aws";
     version = "n/a";
     src = fetchFromGitHub {
       owner = "joprice";
       repo = "ocaml-aws";
-      rev = "a0113eb6bb9b3e97880f1f6a284e1ae1726e54bf";
-      sha256 = "sha256-dfqzshSkHSOiAAqdejnNuR5o4sfk+s9j2VwKjfWsYeA=";
+      rev = "b1b53df3f5eddc5a087926ae914f53cc7851962c";
+      #sha256 = "sha256-dfqzshSkHSOiAAqdejnNuR5o4sfk+s9j2VwKjfWsYeA=";
     };
     propagatedBuildInputs = [
       calendar
@@ -2102,9 +2103,17 @@ with oself;
       rev = "b4896214b0";
       sha256 = "sha256-+HEpLltTLerHvZftOunRQgXkstUKNgJB2nKDBgD7hr8=";
     };
+    #postPatch = ''
+    #  substituteInPlace "src/api/dune" --replace "result" ""
+    #  substituteInPlace src/runtime/dune --replace "(libraries result))" ")"
+    #'';
+    # this isn't in the patch as it is useful when not using melange
     postPatch = ''
-      substituteInPlace "src/api/dune" --replace "result" ""
+      substituteInPlace src/dune --replace " result" ""
+      substituteInPlace src/api/dune --replace "result" ""
       substituteInPlace src/runtime/dune --replace "(libraries result))" ")"
+      substituteInPlace ./src/api/ppx_deriving.cppo.ml --replace "Result.result" "result"
+      substituteInPlace ./src/api/ppx_deriving.cppo.mli --replace "Result.result" "result"
     '';
 
     buildInputs = [ ];
