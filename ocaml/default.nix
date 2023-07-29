@@ -1063,8 +1063,8 @@ with oself;
     src = fetchFromGitHub {
       owner = "dialohq";
       repo = "ocaml-grpc";
-      rev = "4fa8b5396442d264f61c36e08e42c589c8f7d16f";
-      sha256 = "sha256-AWHfZaOlWCgKhx0w6qN7F8dZ0RlJ/3fuwp8ZhM7cUh8=";
+      rev = "529501f7c9aa655c13fcf20858136ec90aaf6cd4";
+      sha256 = "sha256-/cFDZQY3chguYkKzaAGtAFafZVJx5GxzP8m6PAvjGwE=";
     };
     propagatedBuildInputs = [
       ppx_deriving

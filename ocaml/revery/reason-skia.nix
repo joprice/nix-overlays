@@ -28,6 +28,7 @@
 buildDunePackage {
   pname = "reason-skia";
   version = "0.0.0";
+  hardeningDisable = [ "strictoverflow" ];
   inherit (reason-sdl2) src;
   # the cptr function was removed from ctypes, so the value now needs to be
   # destructured to get to the pointer
