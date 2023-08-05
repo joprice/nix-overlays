@@ -2289,6 +2289,17 @@ with oself;
 
   reenv = callPackage ./reenv { };
 
+  res = buildDunePackage {
+    pname = "res";
+    version = "n/a";
+    src = fetchFromGitHub {
+      owner = "mmottl";
+      repo = "res";
+      rev = "d3e3e391e67407c427e148c6cac4bdc78cccbeeb";
+      sha256 = "sha256-/nIHS6Hd0hxqS02fPxviGHmSc2w1oIGmfkiCBTC4c3k=";
+    };
+  };
+
   rfc7748 = osuper.rfc7748.overrideAttrs (o: {
     patches = [ ];
     src = fetchFromGitHub {
