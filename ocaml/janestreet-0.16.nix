@@ -153,13 +153,11 @@ with self;
 
   async_ssl = janePackage {
     pname = "async_ssl";
-    hash = "sha256-BvZ3rZ6dq7spWhKWLfYzr4zZhS0LqlCLuxxRPNsRoZ8=";
+    version = "0.16.1";
+    hash = "sha256-83YKxvVb/JwBnQG4R/R1Ztik9T/hO4cbiNTfFnErpG4=";
     meta.description = "Async wrappers for SSL";
     buildInputs = [ dune-configurator ];
     propagatedBuildInputs = [ async ctypes ctypes-foreign openssl ];
-    postPatch = ''
-      substituteInPlace bindings/dune --replace "ctypes.foreign" "ctypes-foreign"
-    '';
   };
 
   async_udp = janePackage {
@@ -193,8 +191,8 @@ with self;
 
   base = janePackage {
     pname = "base";
-    version = "0.16.2";
-    hash = "sha256-8OvZe+aiWipJ6busBufx3OqERmqxBva55UOLjL8KoPc=";
+    version = "0.16.3";
+    hash = "sha256-PA7nhGud/gCv22cow+KrSgNKgi2NYq/zGsCEAgVRBac=";
     meta.description = "Full standard library replacement for OCaml";
     buildInputs = [ dune-configurator ];
     propagatedBuildInputs = [ sexplib0 ];
@@ -924,7 +922,8 @@ with self;
   ppx_accessor = janePackage {
     pname = "ppx_accessor";
     minimalOCamlVersion = "4.14";
-    hash = "sha256-dJODaOozZ0sVBTZYx4/21AEI6phTQuAgxDOjLA0SqKU=";
+    version = "0.16.1";
+    hash = "sha256-o70q8eSbPeuGkIcCnKoK0BpaqPhy/NS7x2YYR6wfki8=";
     meta.description = "[@@deriving] plugin to generate accessors for use with the Accessor libraries";
     propagatedBuildInputs = [ accessor ];
   };

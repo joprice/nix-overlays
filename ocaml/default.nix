@@ -29,6 +29,7 @@
 , super-opaline
 , gmp-oc
 , openssl-oc
+, oniguruma-lib
 , pam
 , pkg-config
 , protobuf
@@ -378,6 +379,14 @@ with oself;
     };
   };
 
+  ca-certs-nss = osuper.ca-certs-nss.overrideAttrs (_: {
+    version = "3.92";
+    src = builtins.fetchurl {
+      url = https://github.com/mirage/ca-certs-nss/releases/download/v3.92/ca-certs-nss-3.92.tbz;
+      sha256 = "0f05qwslhx8sy15sv8rr7lzdg63b5zgnjp89150a5xhf6kk8b9qp";
+    };
+  });
+
   camlimages = osuper.camlimages.overrideAttrs (o: {
     buildInputs = o.buildInputs ++ [ findlib ];
     postPatch =
@@ -593,20 +602,6 @@ with oself;
       cohttp-lwt
     ];
   };
-
-  cmdliner = osuper.cmdliner.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://erratique.ch/software/cmdliner/releases/cmdliner-1.2.0.tbz;
-      sha256 = "0y00vnlk3nim8bh4gvimdpg71gp22z3b35sfyvb4yf98j1c11vdg";
-    };
-  });
-
-  cohttp = osuper.cohttp.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://github.com/mirage/ocaml-cohttp/releases/download/v5.3.0/cohttp-5.3.0.tbz;
-      sha256 = "1pgddshvk0s8xy60z2s4rqn6mi0zvqpap0sbj8753sp50k3r3gdk";
-    };
-  });
 
   colombe = buildDunePackage {
     pname = "colombe";
@@ -1117,7 +1112,7 @@ with oself;
 
   gstreamer = osuper.gstreamer.overrideAttrs (o: {
     buildInputs = o.buildInputs ++
-    lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Cocoa ];
+      lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Cocoa ];
   });
 
   hacl-star = osuper.hacl-star.overrideAttrs (_: {
@@ -1166,6 +1161,17 @@ with oself;
 
     nativeBuildInputs = [ cmake ];
     propagatedBuildInputs = [ zlib-oc ctypes ];
+  };
+
+  hilite = buildDunePackage {
+    pname = "hilite";
+    version = "0.3.0";
+    src = builtins.fetchurl {
+      url = https://github.com/patricoferris/hilite/releases/download/v0.3.0/hilite-0.3.0.tbz;
+      sha256 = "130rpa4d4335vchzry2bnyxnr34d0s0skv0ba5cx3q4srh4155wv";
+    };
+
+    propagatedBuildInputs = [ omd textmate-language ];
   };
 
   httpaf = callPackage ./httpaf { };
@@ -1301,6 +1307,25 @@ with oself;
       '' else "";
   });
 
+  lambdapi = osuper.lambdapi.overrideAttrs (o: {
+    src = builtins.fetchurl {
+      url = https://github.com/Deducteam/lambdapi/releases/download/2.4.0/lambdapi-2.4.0.tbz;
+      sha256 = "1dlc88jpq5ys8n8saz5af3xacjdprpyvc3r1vzkv0fkc1adap73k";
+    };
+    nativeBuildInputs = o.nativeBuildInputs ++ [ dream ];
+    propagatedBuildInputs = [
+      bindlib
+      cmdliner
+      dream
+      lwt_ppx
+      menhirLib
+      pratter
+      sedlex
+      timed
+      why3
+    ];
+  });
+
   lambda-term = osuper.lambda-term.overrideAttrs (o: {
     src = builtins.fetchurl {
       url = https://github.com/ocaml-community/lambda-term/releases/download/3.3.1/lambda-term-3.3.1.tbz;
@@ -1391,8 +1416,8 @@ with oself;
     src = fetchFromGitHub {
       owner = "ocsigen";
       repo = "lwt";
-      rev = "3d6f0fac";
-      sha256 = "sha256-QIxKQEoA5EOGqhwCKdIWQ09RhPKYoleTWdbT1GI397o=";
+      rev = "5.7.0";
+      hash = "sha256-o0wPK6dPdnsr/LzwcSwbIGcL85wkDjdFuEcAxuS/UEs=";
     };
   });
 
@@ -1484,7 +1509,10 @@ with oself;
   landmarks = callPackage ./landmarks { };
   landmarks-ppx = callPackage ./landmarks/ppx.nix { };
 
-  melange = callPackage ./melange { };
+  melange =
+    if lib.versionAtLeast ocaml.version "5.1" then
+      callPackage ./melange { }
+    else null;
 
   menhirLib = osuper.menhirLib.overrideAttrs (_: {
     src = builtins.fetchurl {
@@ -1852,6 +1880,26 @@ with oself;
     propagatedBuildInputs = [ fmt logs re ];
   };
 
+  omd = osuper.omd.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://github.com/ocaml/omd/releases/download/2.0.0.alpha4/omd-2.0.0.alpha4.tbz;
+      sha256 = "076zc9mbz9698lcx5fw0hvllbv4n29flglz64n15n02vhybrd5lk";
+    };
+    preBuild = "";
+    propagatedBuildInputs = [ uutf uucp uunf dune-build-info ];
+  });
+
+  oniguruma = buildDunePackage {
+    pname = "oniguruma";
+    version = "0.1.2";
+    src = builtins.fetchurl {
+      url = https://github.com/alan-j-hu/ocaml-oniguruma/releases/download/0.1.2/oniguruma-0.1.2.tbz;
+      sha256 = "0rc70nwgx4bqm3h7rar2pmnh543np67rw5m8f6gwzhrwvbykzxp3";
+    };
+    buildInputs = [ dune-configurator ];
+    propagatedBuildInputs = [ oniguruma-lib ];
+  };
+
   swhid_core = buildDunePackage {
     pname = "swhid_core";
     version = "0.1";
@@ -2068,6 +2116,17 @@ with oself;
     propagatedBuildInputs = o.propagatedBuildInputs ++ [ yojson biotk ];
   });
 
+  plist-xml = buildDunePackage {
+    pname = "plist-xml";
+    version = "";
+    src = builtins.fetchurl {
+      url = https://github.com/alan-j-hu/ocaml-plist-xml/releases/download/0.5.0/plist-xml-0.5.0.tbz;
+      sha256 = "1hw3l8q8ip56niszh24yr6dijm7da2rrixdyviffyxv4c9dhd1di";
+    };
+    nativeBuildInputs = [ menhir ];
+    propagatedBuildInputs = [ menhirLib xmlm base64 cstruct iso8601 ];
+  };
+
   postgresql = (osuper.postgresql.override { postgresql = libpq; }).overrideAttrs (o: {
     src = fetchFromGitHub {
       owner = "mmottl";
@@ -2173,17 +2232,20 @@ with oself;
       ];
     });
 
+  textmate-language = buildDunePackage {
+    pname = "textmate-language";
+    version = "0.3.4";
+    src = builtins.fetchurl {
+      url = https://github.com/alan-j-hu/ocaml-textmate-language/releases/download/0.3.4/textmate-language-0.3.4.tbz;
+      sha256 = "17c540ddzqzl8c72rzpm3id6ixi91cq5r8dmjvf0kzj6kjdgrg63";
+    };
+    propagatedBuildInputs = [ oniguruma ];
+  };
+
   terminal = osuper.terminal.overrideAttrs (_: {
     src = builtins.fetchurl {
       url = https://github.com/craigfe/progress/releases/download/0.2.2/progress-0.2.2.tbz;
       sha256 = "1d8h87xkslsh4khfa3wlcz1p55gmh4wyrafgnnsxc7524ccw4h9k";
-    };
-  });
-
-  ptime = osuper.ptime.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://erratique.ch/software/ptime/releases/ptime-1.1.0.tbz;
-      sha256 = "1c9y07vnvllfprf0z1vqf6fr73qxw7hj6h1k5ig109zvaiab3xfb";
     };
   });
 
@@ -2227,7 +2289,8 @@ with oself;
 
   reenv = callPackage ./reenv { };
 
-  res = buildDunePackage {
+  <<<<<<< HEAD
+    res = buildDunePackage {
     pname = "res";
     version = "n/a";
     src = fetchFromGitHub {
@@ -2242,423 +2305,416 @@ with oself;
     postPatch = ''
       substituteInPlace "src/curve.ml" --replace "Pervasives." "Stdlib."
     '';
-  });
+    =======
+    rfc7748 = osuper.rfc7748.overrideAttrs (o: {
+      patches = [ ];
+      src = fetchFromGitHub {
+        owner = "burgerdev";
+        repo = "ocaml-rfc7748";
+        rev = "ed034213ff02cd55870ae1387e91deebc9838eb4";
+        hash = "sha256-26w6YcjBgfe2Fz/Z0RvCdU0MR4MAxIk2HGQ0ri0rrqU=";
+      };
+      checkInputs = o.checkInputs ++ [ hex ];
+      >>>>>>> origin/master
+      });
 
-  rock = osuper.rock.overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "ulrikstrid";
-      repo = "opium";
-      rev = "830f02fb5462619314153cbe7cedf25e49468648";
-      sha256 = "sha256-nvSoLvgrlh/wc5IBN5ZHY/onjXFUFcIs+grQslhwe2w=";
-    };
-  });
-  opium = osuper.opium.overrideAttrs (_: {
-    patches = [ ./opium-status.patch ];
-  });
+      rock = osuper.rock.overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "ulrikstrid";
+          repo = "opium";
+          rev = "830f02fb5462619314153cbe7cedf25e49468648";
+          sha256 = "sha256-nvSoLvgrlh/wc5IBN5ZHY/onjXFUFcIs+grQslhwe2w=";
+        };
+      });
+      opium = osuper.opium.overrideAttrs (_: {
+        patches = [ ./opium-status.patch ];
+      });
 
-  rope = buildDunePackage rec {
-    pname = "rope";
-    version = "0.6.2";
-    minimalOCamlVersion = "4.03";
+      rope = buildDunePackage rec {
+        pname = "rope";
+        version = "0.6.2";
+        minimalOCamlVersion = "4.03";
 
-    src = builtins.fetchurl {
-      url = "https://github.com/Chris00/ocaml-rope/releases/download/${version}/rope-${version}.tbz";
-      sha256 = "15cvfa0s1vjx7gjd07d3fkznilishqf4z4h2q5f20wm9ysjh2h2i";
-    };
+        src = builtins.fetchurl {
+          url = "https://github.com/Chris00/ocaml-rope/releases/download/${version}/rope-${version}.tbz";
+          sha256 = "15cvfa0s1vjx7gjd07d3fkznilishqf4z4h2q5f20wm9ysjh2h2i";
+        };
 
-    buildInputs = [ benchmark ];
-    postPatch = ''
-      substituteInPlace "src/dune" --replace "bytes" ""
-      substituteInPlace "src/rope.ml" --replace "Pervasives" "Stdlib"
-    '';
+        buildInputs = [ benchmark ];
+        postPatch = ''
+          substituteInPlace "src/dune" --replace "bytes" ""
+          substituteInPlace "src/rope.ml" --replace "Pervasives" "Stdlib"
+        '';
 
-    meta = {
-      homepage = "https://github.com/Chris00/ocaml-rope";
-      description = "Ropes (“heavyweight strings”) in OCaml";
-      license = lib.licenses.lgpl21;
-      maintainers = with lib.maintainers; [ ];
-    };
-  };
+        meta = {
+          homepage = "https://github.com/Chris00/ocaml-rope";
+          description = "Ropes (“heavyweight strings”) in OCaml";
+          license = lib.licenses.lgpl21;
+          maintainers = with lib.maintainers; [ ];
+        };
+      };
 
-  routes = osuper.routes.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://github.com/anuragsoni/routes/releases/download/2.0.0/routes-2.0.0.tbz;
-      sha256 = "126nn0gbh12i7yf0qn01ryfp2qw0aj1xfk1vq42fa01biilrsqiv";
-    };
-  });
+      routes = osuper.routes.overrideAttrs (_: {
+        src = builtins.fetchurl {
+          url = https://github.com/anuragsoni/routes/releases/download/2.0.0/routes-2.0.0.tbz;
+          sha256 = "126nn0gbh12i7yf0qn01ryfp2qw0aj1xfk1vq42fa01biilrsqiv";
+        };
+      });
 
-  sendfile = callPackage ./sendfile { };
+      sendfile = callPackage ./sendfile { };
 
-  session = callPackage ./session { };
-  session-redis-lwt = callPackage ./session/redis.nix { };
+      session = callPackage ./session { };
+      session-redis-lwt = callPackage ./session/redis.nix { };
 
-  sodium = buildDunePackage {
-    pname = "sodium";
-    version = "0.8+ahrefs";
-    src = fetchFromGitHub {
-      owner = "ahrefs";
-      repo = "ocaml-sodium";
-      rev = "4c92a94a330f969bf4db7fb0ea07602d80c03b14";
-      sha256 = "sha256-FRM8F4ID2GOs93Fmt8RLMiz4zbkVTsgqa9Gse6tYvVQ=";
-    };
-    patches = [ ./sodium-cc-patch.patch ];
-    postPatch = ''
-      substituteInPlace lib_gen/dune --replace "ctypes)" "ctypes ctypes.stubs)"
-      substituteInPlace lib_gen/dune --replace "ctypes s" "ctypes ctypes.stubs s"
-      substituteInPlace lib_gen/dune --replace \
-        "ocamlfind query ctypes ctypes.stubs" \
-        "ocamlfind query ctypes"
-    '';
-    propagatedBuildInputs = [ ctypes libsodium ];
-  };
+      sodium = buildDunePackage {
+        pname = "sodium";
+        version = "0.8+ahrefs";
+        src = fetchFromGitHub {
+          owner = "ahrefs";
+          repo = "ocaml-sodium";
+          rev = "4c92a94a330f969bf4db7fb0ea07602d80c03b14";
+          sha256 = "sha256-FRM8F4ID2GOs93Fmt8RLMiz4zbkVTsgqa9Gse6tYvVQ=";
+        };
+        patches = [ ./sodium-cc-patch.patch ];
+        postPatch = ''
+          substituteInPlace lib_gen/dune --replace "ctypes)" "ctypes ctypes.stubs)"
+          substituteInPlace lib_gen/dune --replace "ctypes s" "ctypes ctypes.stubs s"
+          substituteInPlace lib_gen/dune --replace \
+            "ocamlfind query ctypes ctypes.stubs" \
+            "ocamlfind query ctypes"
+        '';
+        propagatedBuildInputs = [ ctypes libsodium ];
+      };
 
-  sosa = osuper.sosa.overrideAttrs (_: {
-    postPatch = ''
-      substituteInPlace src/lib/functors.ml --replace "Pervasives" "Stdlib"
-      substituteInPlace src/lib/list_of.ml --replace "Pervasives" "Stdlib"
-      substituteInPlace src/lib/of_mutable.ml --replace "Pervasives" "Stdlib"
-    '';
-  });
+      soundtouch = osuper.soundtouch.overrideAttrs (o: {
+        NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
+      });
 
-  soundtouch = osuper.soundtouch.overrideAttrs (o: {
-    NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
-  });
+      sourcemaps = buildDunePackage {
+        pname = "sourcemaps";
+        version = "n/a";
+        src = fetchFromGitHub {
+          owner = "flow";
+          repo = "ocaml-sourcemaps";
+          rev = "2bc7e6e";
+          sha256 = "sha256-eyiK3bhUMswW9cwlKrSTErwseOp/Qn2rKcw4T5DtuOo=";
+        };
+        propagatedBuildInputs = [ vlq ];
+      };
 
-  sourcemaps = buildDunePackage {
-    pname = "sourcemaps";
-    version = "n/a";
-    src = fetchFromGitHub {
-      owner = "flow";
-      repo = "ocaml-sourcemaps";
-      rev = "2bc7e6e";
-      sha256 = "sha256-eyiK3bhUMswW9cwlKrSTErwseOp/Qn2rKcw4T5DtuOo=";
-    };
-    propagatedBuildInputs = [ vlq ];
-  };
+      spelll = osuper.spelll.overrideAttrs (_: {
+        postPatch = ''
+          substituteInPlace src/Spelll.ml --replace "Pervasives" "Stdlib"
+        '';
+      });
 
-  spelll = osuper.spelll.overrideAttrs (_: {
-    postPatch = ''
-      substituteInPlace src/Spelll.ml --replace "Pervasives" "Stdlib"
-    '';
-  });
+      srt = osuper.srt.overrideAttrs (o: {
+        propagatedBuildInputs = o.propagatedBuildInputs ++ [ ctypes-foreign ];
+        postPatch = ''
+          substituteInPlace "src/dune" "src/stubs/dune" --replace \
+            "ctypes.foreign" "ctypes-foreign"
+        '';
+      });
 
-  srt = osuper.srt.overrideAttrs (o: {
-    propagatedBuildInputs = o.propagatedBuildInputs ++ [ ctypes-foreign ];
-    postPatch = ''
-      substituteInPlace "src/dune" "src/stubs/dune" --replace \
-        "ctypes.foreign" "ctypes-foreign"
-    '';
-  });
+      ssl = (osuper.ssl.override { openssl = openssl-oc.dev; }).overrideAttrs (o: {
+        src = fetchFromGitHub {
+          owner = "savonet";
+          repo = "ocaml-ssl";
+          rev = "v0.7.0";
+          hash = "sha256-gi80iwlKaI4TdAVnCyPG03qRWFa19DHdTrA0KMFBAc4=";
+        };
+        nativeCheckInputs = [ openssl-oc.bin ];
+        buildInputs = o.buildInputs ++ [ dune-configurator ];
+      });
 
-  ssl = (osuper.ssl.override { openssl = openssl-oc.dev; }).overrideAttrs (o: {
-    src = fetchFromGitHub {
-      owner = "savonet";
-      repo = "ocaml-ssl";
-      rev = "v0.7.0";
-      hash = "sha256-gi80iwlKaI4TdAVnCyPG03qRWFa19DHdTrA0KMFBAc4=";
-    };
-    nativeCheckInputs = [ openssl-oc.bin ];
-    buildInputs = o.buildInputs ++ [ dune-configurator ];
-  });
+      markup-lwt = buildDunePackage {
+        pname = "markup-lwt";
+        inherit (markup) src version;
+        propagatedBuildInputs = [ markup lwt ];
+      };
 
-  markup-lwt = buildDunePackage {
-    pname = "markup-lwt";
-    inherit (markup) src version;
-    propagatedBuildInputs = [ markup lwt ];
-  };
+      subscriptions-transport-ws = callPackage ./subscriptions-transport-ws { };
 
-  subscriptions-transport-ws = callPackage ./subscriptions-transport-ws { };
+      syndic = buildDunePackage rec {
+        pname = "syndic";
+        version = "1.6.1";
+        src = builtins.fetchurl {
+          url = "https://github.com/Cumulus/${pname}/releases/download/v${version}/syndic-v${version}.tbz";
+          sha256 = "1i43yqg0i304vpiy3sf6kvjpapkdm6spkf83mj9ql1d4f7jg6c58";
+        };
+        propagatedBuildInputs = [ xmlm uri ptime ];
+      };
 
-  syndic = buildDunePackage rec {
-    pname = "syndic";
-    version = "1.6.1";
-    src = builtins.fetchurl {
-      url = "https://github.com/Cumulus/${pname}/releases/download/v${version}/syndic-v${version}.tbz";
-      sha256 = "1i43yqg0i304vpiy3sf6kvjpapkdm6spkf83mj9ql1d4f7jg6c58";
-    };
-    propagatedBuildInputs = [ xmlm uri ptime ];
-  };
+      syslog = osuper.syslog.overrideAttrs (_: {
+        postPatch = ''
+          substituteInPlace "syslog.ml" --replace "%.15s" "%s"
+        '';
+      });
 
-  syslog = osuper.syslog.overrideAttrs (_: {
-    postPatch = ''
-      substituteInPlace "syslog.ml" --replace "%.15s" "%s"
-    '';
-  });
+      taglib = osuper.taglib.overrideAttrs (o: {
+        NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
+      });
 
-  taglib = osuper.taglib.overrideAttrs (o: {
-    NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
-  });
+      tar = osuper.tar.overrideAttrs (_: {
+        src = builtins.fetchurl {
+          url = https://github.com/mirage/ocaml-tar/releases/download/v2.5.1/tar-2.5.1.tbz;
+          sha256 = "1x1xik316m3a6d616bwa9c9s2ji50g8p3hs9ckhmp837hr40yi6k";
+        };
+      });
 
-  tar = osuper.tar.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://github.com/mirage/ocaml-tar/releases/download/v2.5.1/tar-2.5.1.tbz;
-      sha256 = "1x1xik316m3a6d616bwa9c9s2ji50g8p3hs9ckhmp837hr40yi6k";
-    };
-  });
+      tar-mirage = buildDunePackage {
+        pname = "tar-mirage";
+        inherit (tar) version src;
+        propagatedBuildInputs = [
+          cstruct
+          lwt
+          mirage-block
+          mirage-clock
+          mirage-kv
+          ptime
+          tar
+        ];
+      };
+      tar-unix = disableTests osuper.tar-unix;
 
-  tar-mirage = buildDunePackage {
-    pname = "tar-mirage";
-    inherit (tar) version src;
-    propagatedBuildInputs = [
-      cstruct
-      lwt
-      mirage-block
-      mirage-clock
-      mirage-kv
-      ptime
-      tar
-    ];
-  };
-  tar-unix = disableTests osuper.tar-unix;
+      topkg = osuper.topkg.overrideAttrs (_: {
+        src = builtins.fetchurl {
+          url = https://erratique.ch/software/topkg/releases/topkg-1.0.6.tbz;
+          sha256 = "11ycfk0prqvifm9jca2308gw8a6cjb1hqlgfslbji2cqpan09kpq";
+        };
+      });
 
-  topkg = osuper.topkg.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://erratique.ch/software/topkg/releases/topkg-1.0.6.tbz;
-      sha256 = "11ycfk0prqvifm9jca2308gw8a6cjb1hqlgfslbji2cqpan09kpq";
-    };
-  });
+      tezos-protocol-compiler = osuper.tezos-protocol-compiler.overrideAttrs (o: {
+        nativeBuildInputs = o.nativeBuildInputs ++ [ ocp-ocamlres ];
+      });
 
-  tezos-protocol-compiler = osuper.tezos-protocol-compiler.overrideAttrs (o: {
-    nativeBuildInputs = o.nativeBuildInputs ++ [ ocp-ocamlres ];
-  });
+      tezos-protocol-010-PtGRANAD = osuper.tezos-protocol-010-PtGRANAD.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+          substituteInPlace proto_010_PtGRANAD/lib_protocol/dune.inc \
+            --replace "-w +a-4-6-7-9-16-29-32-40..42-44-45-48-60-67-68" "-w +a-4-6-7-9-16-29-32-40..42-44-45-48-60-67-68-58"
+        '';
+      });
 
-  tezos-protocol-010-PtGRANAD = osuper.tezos-protocol-010-PtGRANAD.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-      substituteInPlace proto_010_PtGRANAD/lib_protocol/dune.inc \
-        --replace "-w +a-4-6-7-9-16-29-32-40..42-44-45-48-60-67-68" "-w +a-4-6-7-9-16-29-32-40..42-44-45-48-60-67-68-58"
-    '';
-  });
+      tezos-protocol-011-PtHangz2 = osuper.tezos-protocol-011-PtHangz2.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+          substituteInPlace proto_011_PtHangz2/lib_protocol/dune.inc --replace "-w +a-4-40..42-44-45-48" "-w +a-4-40..42-44-45-48-58"
+        '';
+      });
 
-  tezos-protocol-011-PtHangz2 = osuper.tezos-protocol-011-PtHangz2.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-      substituteInPlace proto_011_PtHangz2/lib_protocol/dune.inc --replace "-w +a-4-40..42-44-45-48" "-w +a-4-40..42-44-45-48-58"
-    '';
-  });
+      tezos-011-PtHangz2-test-helpers = osuper.tezos-011-PtHangz2-test-helpers.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+        '';
+      });
 
-  tezos-011-PtHangz2-test-helpers = osuper.tezos-011-PtHangz2-test-helpers.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-    '';
-  });
+      tezos-protocol-011-PtHangz2-parameters = osuper.tezos-protocol-011-PtHangz2-parameters.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+        '';
+      });
 
-  tezos-protocol-011-PtHangz2-parameters = osuper.tezos-protocol-011-PtHangz2-parameters.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-    '';
-  });
+      tezos-protocol-plugin-011-PtHangz2 = osuper.tezos-protocol-plugin-011-PtHangz2.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+        '';
+      });
 
-  tezos-protocol-plugin-011-PtHangz2 = osuper.tezos-protocol-plugin-011-PtHangz2.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-    '';
-  });
+      tezos-client-011-PtHangz2 = osuper.tezos-client-011-PtHangz2.overrideAttrs (_: {
+        postPatch = ''
+          echo "(lang dune 3.0)" > dune-project
+        '';
+      });
 
-  tezos-client-011-PtHangz2 = osuper.tezos-client-011-PtHangz2.overrideAttrs (_: {
-    postPatch = ''
-      echo "(lang dune 3.0)" > dune-project
-    '';
-  });
+      timedesc = callPackage ./timere/timedesc.nix { };
+      timedesc-json = callPackage ./timere/timedesc-json.nix { };
+      timedesc-sexp = callPackage ./timere/timedesc-sexp.nix { };
+      timedesc-tzdb = callPackage ./timere/timedesc-tzdb.nix { };
+      timedesc-tzlocal = callPackage ./timere/timedesc-tzlocal.nix { };
+      timere = callPackage ./timere/default.nix { };
+      timere-parse = callPackage ./timere/parse.nix { };
 
-  timedesc = callPackage ./timere/timedesc.nix { };
-  timedesc-json = callPackage ./timere/timedesc-json.nix { };
-  timedesc-sexp = callPackage ./timere/timedesc-sexp.nix { };
-  timedesc-tzdb = callPackage ./timere/timedesc-tzdb.nix { };
-  timedesc-tzlocal = callPackage ./timere/timedesc-tzlocal.nix { };
-  timere = callPackage ./timere/default.nix { };
-  timere-parse = callPackage ./timere/parse.nix { };
+      tls = osuper.tls.overrideAttrs (_: {
+        src = builtins.fetchurl {
+          url = https://github.com/mirleft/ocaml-tls/releases/download/v0.17.1/tls-0.17.1.tbz;
+          sha256 = "0gsxih0dv85wa113syqmz9hgl86p7ciis618d4la538lvsvd4440";
+        };
+        propagatedBuildInputs = [
+          cstruct
+          domain-name
+          fmt
+          logs
+          hkdf
+          mirage-crypto
+          mirage-crypto-ec
+          mirage-crypto-pk
+          mirage-crypto-rng
+          ocaml_lwt
+          ptime
+          x509
+          ipaddr
+        ];
+      });
 
-  tls = osuper.tls.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://github.com/mirleft/ocaml-tls/releases/download/v0.17.1/tls-0.17.1.tbz;
-      sha256 = "0gsxih0dv85wa113syqmz9hgl86p7ciis618d4la538lvsvd4440";
-    };
-    propagatedBuildInputs = [
-      cstruct
-      domain-name
-      fmt
-      logs
-      hkdf
-      mirage-crypto
-      mirage-crypto-ec
-      mirage-crypto-pk
-      mirage-crypto-rng
-      ocaml_lwt
-      ptime
-      x509
-      ipaddr
-    ];
-  });
+      torch = osuper.torch.overrideAttrs (o: {
+        postPatch = ''
+          substituteInPlace src/wrapper/dune --replace "ctypes.foreign" "ctypes-foreign"
+        '';
+        NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
+        propagatedBuildInputs =
+          o.propagatedBuildInputs ++
+            [ ctypes-foreign ] ++
+            lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Accelerate ];
+        doCheck = !stdenv.isDarwin;
+        checkPhase = "dune runtest --profile=release";
+      });
 
-  torch = osuper.torch.overrideAttrs (o: {
-    postPatch = ''
-      substituteInPlace src/wrapper/dune --replace "ctypes.foreign" "ctypes-foreign"
-    '';
-    NIX_CFLAGS_COMPILE = lib.optionalString stdenv.isDarwin "-I${lib.getDev libcxx}/include/c++/v1";
-    propagatedBuildInputs =
-      o.propagatedBuildInputs ++
-      [ ctypes-foreign ] ++
-      lib.optionals stdenv.isDarwin [ darwin.apple_sdk.frameworks.Accelerate ];
-    doCheck = !stdenv.isDarwin;
-    checkPhase = "dune runtest --profile=release";
-  });
+      tsdl = osuper.tsdl.overrideAttrs (o: {
+        postPatch = ''
+          substituteInPlace _tags --replace "ctypes.foreign" "ctypes-foreign"
+        '';
+        propagatedBuildInputs =
+          o.propagatedBuildInputs
+            ++ [ ctypes-foreign ]
+            ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
+            Cocoa
+            CoreAudio
+            CoreVideo
+            AudioToolbox
+            ForceFeedback
+          ]);
+      });
 
-  tsdl = osuper.tsdl.overrideAttrs (o: {
-    postPatch = ''
-      substituteInPlace _tags --replace "ctypes.foreign" "ctypes-foreign"
-    '';
-    propagatedBuildInputs =
-      o.propagatedBuildInputs
-      ++ [ ctypes-foreign ]
-      ++ lib.optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
-        Cocoa
-        CoreAudio
-        CoreVideo
-        AudioToolbox
-        ForceFeedback
-      ]);
-  });
+      tyxml = osuper.tyxml.overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "ocsigen";
+          repo = "tyxml";
+          rev = "c28e871df6db66a261ba541aa15caad314c78ddc";
+          sha256 = "sha256-2dgkuDjeZDJcxZHoZK7uAiPCwg29eYZkTjgsD8OeTQA=";
+        };
+      });
+      tyxml-jsx = callPackage ./tyxml/jsx.nix { };
+      tyxml-ppx = callPackage ./tyxml/ppx.nix { };
+      tyxml-syntax = callPackage ./tyxml/syntax.nix { };
 
-  tyxml = osuper.tyxml.overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "ocsigen";
-      repo = "tyxml";
-      rev = "c28e871df6db66a261ba541aa15caad314c78ddc";
-      sha256 = "sha256-2dgkuDjeZDJcxZHoZK7uAiPCwg29eYZkTjgsD8OeTQA=";
-    };
-  });
-  tyxml-jsx = callPackage ./tyxml/jsx.nix { };
-  tyxml-ppx = callPackage ./tyxml/ppx.nix { };
-  tyxml-syntax = callPackage ./tyxml/syntax.nix { };
+      uri = osuper.uri.overrideAttrs (o: {
+        src = fetchFromGitHub {
+          owner = "mirage";
+          repo = "ocaml-uri";
+          rev = "cca065b1e6f9c6271eb60d16179806a775b08579";
+          hash = "sha256-y/RfO87ffRZhdFxhfCJRE7Mcs/lq7yOZ6Sv8twcD4Sw=";
+        };
+        doCheck = false;
+      });
 
-  uri = osuper.uri.overrideAttrs (o: {
-    src = fetchFromGitHub {
-      owner = "mirage";
-      repo = "ocaml-uri";
-      rev = "cca065b1e6f9c6271eb60d16179806a775b08579";
-      hash = "sha256-y/RfO87ffRZhdFxhfCJRE7Mcs/lq7yOZ6Sv8twcD4Sw=";
-    };
-    doCheck = false;
-  });
+      unix-errno = osuper.unix-errno.overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "xapi-project";
+          repo = "ocaml-unix-errno";
+          rev = "a36eec0aa612141ababbc8131a489bc6df7094a8";
+          hash = "sha256-8e5NR69LyHnNdbDA/18OOYCUtsJW0h3mZkgxiQ85/QI=";
+        };
+        propagatedBuildInputs = [ ctypes integers ];
+      });
 
-  unix-errno = osuper.unix-errno.overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "xapi-project";
-      repo = "ocaml-unix-errno";
-      rev = "a36eec0aa612141ababbc8131a489bc6df7094a8";
-      hash = "sha256-8e5NR69LyHnNdbDA/18OOYCUtsJW0h3mZkgxiQ85/QI=";
-    };
-    propagatedBuildInputs = [ ctypes integers ];
-  });
+      unstrctrd = disableTests osuper.unstrctrd;
 
-  unstrctrd = disableTests osuper.unstrctrd;
+      uring = osuper.uring.overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "ocaml-multicore";
+          repo = "ocaml-uring";
+          rev = "566b225c1b028fa845d071b9950f03e96c34e82f";
+          hash = "sha256-3FAMsk26BrC1YVSFoq7B762ZJiDbpaMO9kAYxas6BLw=";
+        };
 
-  uring = osuper.uring.overrideAttrs (_: {
-    doCheck = ! (lib.versionOlder "5.1" ocaml.version);
-    postPatch = ''
-      patchShebangs vendor/liburing/configure
-      substituteInPlace lib/uring/dune --replace \
-        '(run ./configure)' '(bash "./configure")'
-    '';
-  });
+        doCheck = ! (lib.versionOlder "5.1" ocaml.version);
+        postPatch = ''
+          patchShebangs vendor/liburing/configure
+          substituteInPlace lib/uring/dune --replace \
+            '(run ./configure)' '(bash "./configure")'
+        '';
+      });
 
-  utop = osuper.utop.overrideAttrs (o: {
-    src = builtins.fetchurl {
-      url = https://github.com/ocaml-community/utop/releases/download/2.13.1/utop-2.13.1.tbz;
-      sha256 = "1zbgb89c5wg6lr573x018kvvfxxbdvv5hk24g65a59nijjiw4kmh";
-    };
-    propagatedBuildInputs = o.propagatedBuildInputs ++ [ findlib xdg ];
-  });
+      uutf = osuper.uutf.overrideAttrs (_: {
+        pname = "uutf";
+      });
 
-  uutf = osuper.uutf.overrideAttrs (_: {
-    pname = "uutf";
-  });
+      vg = osuper.vg.overrideAttrs (_: {
+        propagatedBuildInputs = [
+          uchar
+          gg
+          uutf
+          otfm
+          js_of_ocaml
+          js_of_ocaml-ppx
+        ];
+      });
+      visitors = osuper.visitors.overrideAttrs (_: {
+        propagatedBuildInputs = [ ppxlib ppx_deriving ];
+      });
 
-  vg = osuper.vg.overrideAttrs (_: {
-    propagatedBuildInputs = [
-      uchar
-      gg
-      uutf
-      otfm
-      js_of_ocaml
-      js_of_ocaml-ppx
-    ];
-  });
-  visitors = osuper.visitors.overrideAttrs (_: {
-    propagatedBuildInputs = [ ppxlib ppx_deriving ];
-  });
+      vlq = buildDunePackage {
+        pname = "vlq";
+        version = "0.2.1";
 
-  vlq = buildDunePackage {
-    pname = "vlq";
-    version = "0.2.1";
+        src = builtins.fetchurl {
+          url = https://github.com/flowtype/ocaml-vlq/releases/download/v0.2.1/vlq-v0.2.1.tbz;
+          sha256 = "02wr9ph4q0nxmqgbc67ydf165hmrdv9b655krm2glc3ahb6larxi";
+        };
 
-    src = builtins.fetchurl {
-      url = https://github.com/flowtype/ocaml-vlq/releases/download/v0.2.1/vlq-v0.2.1.tbz;
-      sha256 = "02wr9ph4q0nxmqgbc67ydf165hmrdv9b655krm2glc3ahb6larxi";
-    };
+        buildInputs = [ dune-configurator ];
+        propagatedBuildInputs = [ camlp-streams ];
+        postPatch = ''
+          substituteInPlace "src/dune" --replace \
+            '(public_name vlq))' '(libraries camlp-streams)(public_name vlq))'
+        '';
+      };
 
-    buildInputs = [ dune-configurator ];
-    propagatedBuildInputs = [ camlp-streams ];
-    postPatch = ''
-      substituteInPlace "src/dune" --replace \
-        '(public_name vlq))' '(libraries camlp-streams)(public_name vlq))'
-    '';
-  };
+      websocketaf = callPackage ./websocketaf { };
+      websocketaf-lwt = callPackage ./websocketaf/lwt.nix { };
+      websocketaf-lwt-unix = callPackage ./websocketaf/lwt-unix.nix { };
+      websocketaf-async = callPackage ./websocketaf/async.nix { };
+      websocketaf-mirage = callPackage ./websocketaf/mirage.nix { };
 
-  websocketaf = callPackage ./websocketaf { };
-  websocketaf-lwt = callPackage ./websocketaf/lwt.nix { };
-  websocketaf-lwt-unix = callPackage ./websocketaf/lwt-unix.nix { };
-  websocketaf-async = callPackage ./websocketaf/async.nix { };
-  websocketaf-mirage = callPackage ./websocketaf/mirage.nix { };
+      why3 = callPackage ./why3 { inherit nixpkgs; };
 
-  x509 = osuper.x509.overrideAttrs (_: {
-    src = builtins.fetchurl {
-      url = https://github.com/mirleft/ocaml-x509/releases/download/v0.16.5/x509-0.16.5.tbz;
-      sha256 = "16fdii9sffdbrbzzhdfk677rs77h01ffw2v9nagn2zx3zsjjb7hl";
-    };
-  });
+      yuscii = disableTests osuper.yuscii;
 
-  xenstore-tool = osuper.xenstore-tool.overrideAttrs (o: {
-    propagatedBuildInputs = [ camlp-streams ];
-    postPatch = ''
-      substituteInPlace "cli/dune" --replace \
-        "libraries lwt" "libraries camlp-streams lwt"
-    '';
-  });
+      zarith = (osuper.zarith.override { gmp = gmp-oc; }).overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "ocaml";
+          repo = "Zarith";
+          rev = "release-1.13";
+          hash = "sha256-CNVKoJeO3fsmWaV/dwnUA8lgI4ZlxR/LKCXpCXUrpSg=";
+        };
+      });
 
-  yuscii = disableTests osuper.yuscii;
+      zed = osuper.zed.overrideAttrs (o: {
+        src = builtins.fetchurl {
+          url = https://github.com/ocaml-community/zed/releases/download/3.2.2/zed-3.2.2.tbz;
+          sha256 = "0bkpmg8vb8bfi9zjnqba11kp74b7b6zh40az13pnj61gyb4fqsh9";
+        };
+        propagatedBuildInputs = [ react uchar uutf uucp uuseg ];
+        postPatch = ''
+          substituteInPlace src/dune --replace "result" ""
+        '';
+      });
 
-  zarith = (osuper.zarith.override { gmp = gmp-oc; }).overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "ocaml";
-      repo = "Zarith";
-      rev = "release-1.13";
-      hash = "sha256-CNVKoJeO3fsmWaV/dwnUA8lgI4ZlxR/LKCXpCXUrpSg=";
-    };
-  });
-
-  zed = osuper.zed.overrideAttrs (o: {
-    src = builtins.fetchurl {
-      url = https://github.com/ocaml-community/zed/releases/download/3.2.2/zed-3.2.2.tbz;
-      sha256 = "0bkpmg8vb8bfi9zjnqba11kp74b7b6zh40az13pnj61gyb4fqsh9";
-    };
-    propagatedBuildInputs = [ react uchar uutf uucp uuseg ];
-    postPatch = ''
-      substituteInPlace src/dune --replace "result" ""
-    '';
-  });
-
-  zmq = osuper.zmq.overrideAttrs (_: {
-    src = fetchFromGitHub {
-      owner = "issuu";
-      repo = "ocaml-zmq";
-      rev = "8a24cd042";
-      sha256 = "sha256-EZKDSzW08lNgJgtgNOBgQ8ub29pSy2rwcqoMNu+P3kI=";
-    };
-  });
-} // janeStreet // (
-  if lib.hasPrefix "5." osuper.ocaml.version
-  then (import ./ocaml5.nix { inherit oself darwin fetchFromGitHub; })
-  else { }
-) // (import ./melange-packages.nix { inherit oself fetchFromGitHub; })
+      zmq = osuper.zmq.overrideAttrs (_: {
+        src = fetchFromGitHub {
+          owner = "issuu";
+          repo = "ocaml-zmq";
+          rev = "8a24cd042";
+          sha256 = "sha256-EZKDSzW08lNgJgtgNOBgQ8ub29pSy2rwcqoMNu+P3kI=";
+        };
+      });
+    } // janeStreet // (
+      if lib.hasPrefix "5." osuper.ocaml.version
+      then (import ./ocaml5.nix { inherit oself darwin fetchFromGitHub; })
+      else { }
+    ) // (
+      if lib.versionAtLeast osuper.ocaml.version "5.1"
+      then (import ./melange-packages.nix { inherit oself fetchFromGitHub; })
+      else { }
+    )
