@@ -39,6 +39,7 @@ in
       super-opaline = super.opaline;
       libfontconfig = fontconfig;
       oniguruma-lib = super.oniguruma;
+      libgsl = super.gsl;
     })
   ];
 }) // {
@@ -60,6 +61,8 @@ in
       aarch64-multiplatform-musl =
         (super.pkgsCross.aarch64-multiplatform-musl.appendOverlays
           [ cross-overlay static-overlay ]);
+
+      riscv64 = super.pkgsCross.riscv64.extend cross-overlay;
     };
 
 
@@ -347,8 +350,8 @@ in
         src = fetchFromGitHub {
           owner = "anmonteiro";
           repo = "relay";
-          rev = "f36e209996e23355329da17a78644034b103b4b8";
-          hash = "sha256-+m6lUmSf//ah6AYYpo8e/bnuBCoN8QBwzAuJLADYth8=";
+          rev = "29df59f27f4f83552c3251d118c82897940d0e6c";
+          hash = "sha256-t9osbIYh7CdRF4HlVZ76M1wuKe0E6j6Pup2CaTEvolQ=";
           sparseCheckout = [ "compiler" ];
         };
         dontBuild = true;
@@ -362,7 +365,7 @@ in
       pname = "relay";
       version = "n/a";
       src = "${melange-relay-compiler-src}/compiler";
-      cargoHash = "sha256-iyFSsvw3+YCiJz43XVE2IhvooimWdNvuLsBKPtC5EWk=";
+      cargoHash = "sha256-yjeRsSQ4cPk6uO4NNqKDp/6cBWPQaQGgFvT8HK1rC6s=";
 
       nativeBuildInputs = lib.optionals stdenv.isLinux [ pkg-config ];
       # Needed to get openssl-sys to use pkg-config.
@@ -389,7 +392,7 @@ in
   lib.mapAttrs'
     (n: p: lib.nameValuePair "${n}-oc" p)
     {
-      inherit (super) zlib gmp libev pcre zstd rdkafka sqlite;
+      inherit (super) gmp libev lz4 pcre rdkafka sqlite zlib zstd;
       libffi = super.libffi.overrideAttrs (_: { doCheck = false; });
       openssl = super.openssl_3_0;
     }

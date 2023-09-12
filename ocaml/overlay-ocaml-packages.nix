@@ -35,19 +35,6 @@ let
         });
       });
 
-      ocamlPackages_5_1 = newOCamlScope {
-        major_version = "5";
-        minor_version = "1";
-        patch_version = "0~rc1";
-        hardeningDisable = [ "strictoverflow" ];
-        src = super.fetchFromGitHub {
-          owner = "ocaml";
-          repo = "ocaml";
-          rev = "5.1.0-rc1";
-          hash = "sha256-9LNmGV/CoL/vhiJhbhiyg9R91ae18nbAGkh+elKs7Fw=";
-        };
-      };
-
       ocamlPackages_trunk = newOCamlScope {
         major_version = "5";
         minor_version = "2";
@@ -105,8 +92,7 @@ in
 rec {
   ocaml-ng = custom-ocaml-ng // oPs // {
     ocamlPackages = overlaySinglePackageSet custom-ocaml-ng.ocamlPackages;
-    ocamlPackages_latest = oPs.ocamlPackages_5_0;
-    ocamlPackages_5_00 = lib.warn "`ocamlPackages_5_00` is deprecated: use `ocamlPackages_5_0` instead" oPs.ocamlPackages_5_0;
+    ocamlPackages_latest = oPs.ocamlPackages_5_1;
   };
   ocamlPackages =
     if updateOCamlPackages then

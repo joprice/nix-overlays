@@ -43,6 +43,11 @@ let
     "eliom"
     "ocsigen-start"
     "ocsigen-toolkit"
+    "ocsigen_server"
+    "ocsipersist"
+    "ocsipersist-pgsql"
+    "ocsipersist-sqlite"
+
 
     "dream-serve"
 
@@ -65,11 +70,8 @@ let
     "ocaml-probes"
 
     "biotk"
-    "bistro"
     "phylogenetics"
-    "cfstream"
     "biocaml"
-    "kafka_async"
     "pythonlib"
     "graphql-async"
     "magic-trace"
@@ -77,10 +79,6 @@ let
 
     # Old mirage-kv interface
     "mirage-fs"
-
-    # conflicts with new LSP
-    "linol"
-    "linol-lwt"
 
     # too old ocamlformat versions
     "ocamlformat_0_19_0"
@@ -93,6 +91,9 @@ let
 
     # Incompatible with omd 2.0
     "sail"
+
+    # Incompatible with EIO v0.12
+    "cohttp-eio"
   ];
 
   ocaml5Ignores = [
@@ -107,7 +108,6 @@ let
     "owl"
     "piqi"
     "piqi-ocaml"
-    "semver"
     "lambdapi"
 
     # broken on 5.1
@@ -124,6 +124,9 @@ let
     "alsa"
     "mm"
     "owl"
+
+    "lambdapi"
+    "why3"
 
     "uring"
     "eio_linux"
