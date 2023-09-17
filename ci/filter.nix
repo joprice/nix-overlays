@@ -112,6 +112,10 @@ let
 
     # broken on 5.1
     "labltk"
+    "ocaml-migrate-parsetree-2"
+    "ocaml-migrate-types"
+    "ppx_debug"
+    "typedppxlib"
   ];
 
   darwinIgnores = [
@@ -124,9 +128,6 @@ let
     "alsa"
     "mm"
     "owl"
-
-    "lambdapi"
-    "why3"
 
     "uring"
     "eio_linux"

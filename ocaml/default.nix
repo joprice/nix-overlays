@@ -297,8 +297,8 @@ with oself;
       fetchFromGitHub {
         owner = "ocaml-batteries-team";
         repo = "batteries-included";
-        rev = "v3.7.0";
-        hash = "sha256-5kl5Vypi2ov3iMm+l4Kwe42mUWWz1Xn6/HANQ1HC1ys=";
+        rev = "v3.7.1";
+        hash = "sha256-0ZCaJA9xowO9QxCWcyJ1zhqG7+GNkMYJt62+VPOFj4Y=";
       };
 
     propagatedBuildInputs = [ num camlp-streams ];
@@ -902,11 +902,9 @@ with oself;
   dune_2 = dune_3;
 
   dune_3 = osuper.dune_3.overrideAttrs (o: {
-    src = fetchFromGitHub {
-      owner = "ocaml";
-      repo = "dune";
-      rev = "ade58ac71a5829a6df376a103078422d451e4e5c";
-      hash = "sha256-6kA9fJhg8dKaESLLouArR1XVg/5bugvBV5Wj7QlGx9I=";
+    src = builtins.fetchurl {
+      url = https://github.com/ocaml/dune/releases/download/3.11.0_alpha1/dune-3.11.0.alpha1.tbz;
+      sha256 = "0rh92rmq18h1558bx41j8s0xf702z4z463vap0szq7z9364yjwar";
     };
     nativeBuildInputs = o.nativeBuildInputs ++ [ makeWrapper ];
     postFixup =
@@ -1663,6 +1661,21 @@ with oself;
     };
   });
 
+  nanoid = buildDunePackage {
+    pname = "nanoid";
+    version = "dev";
+    src = fetchFromGitHub {
+      # anmonteiro/mirage-crypto
+      owner = "routineco";
+      repo = "ocaml-nanoid";
+      rev = "620bb69410774bc8d3285ae2fe9b5534b3c96688";
+      hash = "sha256-Elz6yBXHGqpGmxWEfhNxLcc4Ju8wmnrPDqkOgRzkPf4=";
+    };
+    propagatedBuildInputs = [ mirage-crypto-rng ];
+    checkInputs = [ alcotest ];
+    doCheck = true;
+  };
+
   npy = osuper.npy.overrideAttrs (_: {
     postPatch = ''
       substituteInPlace src/dune --replace " bigarray" ""
@@ -1711,6 +1724,15 @@ with oself;
     enableParallelBuilding = true;
   });
 
+  ocamlformat-lib = osuper.ocamlformat-lib.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://github.com/ocaml-ppx/ocamlformat/releases/download/0.26.1/ocamlformat-0.26.1.tbz;
+      sha256 = "1my6fh6sfispalyypar5xv1vgncvb53d825q5xhyrf8mgx16w06s";
+    };
+  });
+  ocamlformat = osuper.ocamlformat.overrideAttrs (_: {
+    inherit (ocamlformat-lib) src;
+  });
   ocamlformat-rpc-lib = buildDunePackage {
     pname = "ocamlformat-rpc-lib";
     inherit (ocamlformat-lib) src version;
@@ -2217,7 +2239,12 @@ with oself;
     '';
   });
 
-  pp = disableTests osuper.pp;
+  pp = osuper.pp.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://github.com/ocaml-dune/pp/releases/download/1.2.0/pp-1.2.0.tbz;
+      sha256 = "174hwr63gpliw9w2ipzjbkvdib7js6n6xicyn8nv9bsm7ibj5s55";
+    };
+  });
   pprint = osuper.pprint.overrideAttrs (_: {
     src = fetchFromGitHub {
       owner = "fpottier";
@@ -2235,9 +2262,25 @@ with oself;
 
   ppx_jsx_embed = callPackage ./ppx_jsx_embed { };
 
+  ppx_optint = buildDunePackage {
+    pname = "ppx_optint";
+    version = "0.2.0";
+    src = builtins.fetchurl {
+      url = https://github.com/reynir/ppx_optint/releases/download/v0.2.0/ppx_optint-0.2.0.tbz;
+      sha256 = "09casz0hzmhj8ajjq595a8aa1l567lzhiszjrv2d8q0jbr8zw19l";
+    };
+    propagatedBuildInputs = [ optint ppxlib ];
+  };
+
   ppx_rapper = callPackage ./ppx_rapper { };
   ppx_rapper_async = callPackage ./ppx_rapper/async.nix { };
   ppx_rapper_lwt = callPackage ./ppx_rapper/lwt.nix { };
+
+  ppx_show = osuper.ppx_show.overrideAttrs (_: {
+    postPatch = ''
+      touch ppx_show.opam
+    '';
+  });
 
   ppx_deriving = osuper.ppx_deriving.overrideAttrs (o: {
     src = fetchFromGitHub {
@@ -2544,7 +2587,6 @@ with oself;
       tar
     ];
   };
-  tar-unix = disableTests osuper.tar-unix;
 
   textmate-language = buildDunePackage {
     pname = "textmate-language";
@@ -2741,6 +2783,32 @@ with oself;
       substituteInPlace lib/uring/dune --replace \
         '(run ./configure)' '(bash "./configure")'
     '';
+  });
+
+
+  uucd = osuper.uucd.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://erratique.ch/software/uucd/releases/uucd-15.1.0.tbz;
+      sha256 = "1wkdm0f7qhh27vv9id7fvax57qfr3v85ngwwjsnwq9c3jikhv00w";
+    };
+  });
+  uucp = osuper.uucp.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://erratique.ch/software/uucp/releases/uucp-15.1.0.tbz;
+      sha256 = "11srn8zwba31zmj129v6l8sigdm9qrgcfd59vl1qmds70s44n7m9";
+    };
+  });
+  uunf = osuper.uunf.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://erratique.ch/software/uunf/releases/uunf-15.1.0.tbz;
+      sha256 = "1r296gz56prq7aa746gjzc6md6zz7m7yf6d368qscnamp1pszk0g";
+    };
+  });
+  uuseg = osuper.uuseg.overrideAttrs (_: {
+    src = builtins.fetchurl {
+      url = https://erratique.ch/software/uuseg/releases/uuseg-15.1.0.tbz;
+      sha256 = "1ial0afpc02ih73ad7136gv3dsz26h3p51pbkzw3a7vmvrckgwi0";
+    };
   });
 
   uutf = osuper.uutf.overrideAttrs (_: {
